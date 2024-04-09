@@ -1,21 +1,23 @@
 import 'package:http/http.dart' as http;
 
 abstract class HttpService {
-  Future<dynamic> get();
-  Future<dynamic> post({required Map<String ,dynamic> body});
+  Future<dynamic> get({required String url});
+  Future<dynamic> post(
+      {required Map<String, dynamic> body, required String url});
   Future<dynamic> put();
   dynamic delete();
 }
 
 class HttpServiceImpl implements HttpService {
   final client = http.Client();
-  final url = "https://jsonplaceholder.typicode.com/posts";
 
   @override
-  Future<dynamic> get() async {
+  Future<dynamic> get({required String url}) async {
     final result = await client.get(Uri.parse(url));
 
-    return result.body;
+    print(result);
+
+    return result;
   }
 
   @override
@@ -31,10 +33,8 @@ class HttpServiceImpl implements HttpService {
   }
 
   @override
-  Future post({required Map<String, dynamic> body}) async {
+  Future post({required Map<String, dynamic> body, required String url}) async {
     final response = await client.post(Uri.parse(url), body: body);
-    print("ta aqui ${response.body}");
-    print("ta aqui ${response.statusCode}");
     return response.body;
   }
 }
