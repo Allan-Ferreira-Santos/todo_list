@@ -1,40 +1,81 @@
+import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:todo_list/core/utils/exceptions/http_exception_request.dart';
 
-abstract class HttpService {
-  Future<dynamic> get({required String url});
-  Future<dynamic> post(
+abstract class HttpResponseService {
+  Future<http.Response> get({required String url});
+  Future<http.Response> post({Map<String, dynamic>? body, required String url});
+  Future<http.Response> put(
       {required Map<String, dynamic> body, required String url});
-  Future<dynamic> put();
-  dynamic delete();
 }
 
-class HttpServiceImpl implements HttpService {
-  final client = http.Client();
+class DefaultHttpResponseService implements HttpResponseService {
+  final http.Client client = http.Client();
 
   @override
-  Future<dynamic> get({required String url}) async {
-    final result = await client.get(Uri.parse(url));
+  Future<http.Response> get({required String url}) async {
+    try {
+      final response = await client.get(Uri.parse(url));
 
-    print(result);
+      if (response.statusCode >= 400) {
+        throw HttpExceptionRequest(
+          'HTTP error ${response.statusCode}: ${response.body}',
+          url: url,
+        );
+      }
 
-    return result;
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
-  Future delete() {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<http.Response> put(
+      {required Map<String, dynamic> body, required String url}) async {
+    try {
+      final response = await client.put(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode >= 400) {
+        throw HttpExceptionRequest(
+          'HTTP error ${response.statusCode}: ${response.body}',
+          url: url,
+          body: body,
+        );
+      }
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
-  Future put() {
-    // TODO: implement put
-    throw UnimplementedError();
-  }
+  Future<http.Response> post(
+      {Map<String, dynamic>? body, required String url}) async {
+    try {
+      final response = await client.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
 
-  @override
-  Future post({required Map<String, dynamic> body, required String url}) async {
-    final response = await client.post(Uri.parse(url), body: body);
-    return response.body;
+      if (response.statusCode >= 400) {
+        throw HttpExceptionRequest(
+          'HTTP error ${response.statusCode}: ${response.body}',
+          url: url,
+          body: body,
+        );
+      }
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
   }
 }
+

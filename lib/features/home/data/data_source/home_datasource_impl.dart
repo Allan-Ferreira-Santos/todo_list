@@ -5,21 +5,18 @@ import 'package:todo_list/features/home/data/models/home_model.dart';
 import 'package:todo_list/features/home/infra/datasource/home_datasource.dart';
 
 class HomeDataSourceImpl implements HomeDataSource {
-  final HttpService client;
+  final DefaultHttpResponseService client;
 
   HomeDataSourceImpl({required this.client});
 
   @override
   Future<List<HomeModel>> getList() async {
     try {
-      const url = "https://jsonplaceholder.typicode.com/todos";
+      const url = "https://gc-api-todo.vercel.app/{Allan-Ferreira}/todos";
       final response = await client.get(url: url);
-
       final List<dynamic> jsonData = jsonDecode(response.body);
-
       final List<HomeModel> homeModels =
           jsonData.map((json) => HomeModel.fromJson(json)).toList();
-
       return homeModels;
     } on ServerError {
       rethrow;
@@ -29,35 +26,36 @@ class HomeDataSourceImpl implements HomeDataSource {
   @override
   Future<List<HomeModel>> getAllTasksCompleted() async {
     try {
-      const url =
-          "https://jsonplaceholder.typicode.com/posts/1/comments?postId=2";
-
+      const url = "https://gc-api-todo.vercel.app/{Allan-Ferreira}/todos?status=complete";
       final response = await client.get(url: url);
-
       final List<dynamic> jsonData = jsonDecode(response.body);
-      final List<HomeModel> homeModels =
-          jsonData.map((json) => HomeModel.fromJson(json)).toList();
-
+      final List<HomeModel> homeModels = jsonData.map((json) => HomeModel.fromJson(json)).toList();
       return homeModels;
     } on ServerError {
       rethrow;
     }
   }
-  
+
   @override
-  Future<List<HomeModel>> getListById({required int id}) async{
+  Future<HomeModel> getListById({required int id}) async {
     try {
-      print("id $id");
-      final url =
-          "https://jsonplaceholder.typicode.com/comments?postId=$id";
-
+      final url = "https://gc-api-todo.vercel.app/{Allan-Ferreira}/todos/$id";
       final response = await client.get(url: url);
+      final Map<String, dynamic> jsonData = jsonDecode(response.body);
+      final HomeModel homeModel = HomeModel.fromJson(jsonData);
+      return homeModel;
+    } on ServerError {
+      rethrow;
+    }
+  }
 
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      final List<HomeModel> homeModels =
-          jsonData.map((json) => HomeModel.fromJson(json)).toList();
-
-      return homeModels;
+  @override
+  Future<String> completTask({required int id}) async {
+    try {
+      final url = "https://gc-api-todo.vercel.app/{Allan-Ferreira}/todos/$id/complete";
+      final statusCodeResponse = await client.post(url: url);
+      final statusCode = statusCodeResponse.statusCode.toString();
+      return statusCode;
     } on ServerError {
       rethrow;
     }

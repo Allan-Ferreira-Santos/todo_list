@@ -7,7 +7,7 @@ class GetListByIdTaskUseCase {
 
   GetListByIdTaskUseCase({required this.homeRepository});
 
-  Future<List<HomeEntity>> call({required int id}) async {
+  Future<HomeEntity> call({required int id}) async {
     try {
       return await homeRepository.getListById(id: id);
     } on ServerError {

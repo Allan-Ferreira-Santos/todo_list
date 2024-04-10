@@ -1,9 +1,7 @@
 class HomeEntity {
   final int id;
-  final String nameTask;
-  final String name;
+  final String task;
+  final String status;
 
-  HomeEntity({required this.id, required this.nameTask, required this.name});
-
-
+  HomeEntity({required this.id, required this.task, required this.status});
 }
