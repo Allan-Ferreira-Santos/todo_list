@@ -8,7 +8,10 @@ class RegisterTaskUseCase {
 
   Future<String> call({required String nameTask}) async {
     try {
-      return await registerRepository.registerTask(nameTask: nameTask);
+      if (nameTask.isNotEmpty) {
+        return await registerRepository.registerTask(nameTask: nameTask);
+      }
+      return "";
     } on ServerError {
       rethrow;
     }
