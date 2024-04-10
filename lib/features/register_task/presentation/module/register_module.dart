@@ -10,21 +10,21 @@ import 'package:todo_list/features/register_task/presentation/controller/registe
 
 class RegisterModule extends Module {
   @override
-  void binds(i) {}
+  final List<Bind> binds = [
+    Bind.factory((i) => DefaultHttpResponseService()),
+    Bind.factory((i) => RegisterDataSourceImpl(client: i())),
+    Bind.factory((i) => RegisterRepositoryImpl(registerDataSource: i())),
+    Bind.factory((i) => RegisterTaskUseCase(registerRepository: i())),
+    Bind.factory((i) => UpdateTaskUseCase(registerRepository: i())),
+    Bind.factory((i) =>
+        RegisterController(updateTaskUseCase: i(), registerTaskUseCase: i())),
+  ];
 
   @override
-  void routes(r) {
-    r.child("/",
-        child: (context) => RegisterPage(
-            homeEntity: r.args.data ?? HomeEntity(id: 0, task: "", status: ""),
-            registerController: RegisterController(
-                registerTaskUseCase: RegisterTaskUseCase(
-                    registerRepository: RegisterRepositoryImpl(
-                        registerDataSource: RegisterDataSourceImpl(
-                            client: DefaultHttpResponseService()))),
-                updateTaskUseCase: UpdateTaskUseCase(
-                    registerRepository: RegisterRepositoryImpl(
-                        registerDataSource: RegisterDataSourceImpl(
-                            client: DefaultHttpResponseService()))))));
-  }
+  final List<ModularRoute> routes = [
+    ChildRoute("/",
+        child: (_, args) => RegisterPage(
+            registerController: Modular.get(),
+            homeEntity: args.data ?? HomeEntity(id: 0, task: "", status: ""))),
+  ];
 }

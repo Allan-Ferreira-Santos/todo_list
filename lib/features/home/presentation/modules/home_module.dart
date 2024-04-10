@@ -10,33 +10,29 @@ import 'package:todo_list/features/home/presentation/controller/home_controller.
 import 'package:todo_list/features/register_task/presentation/module/register_module.dart';
 import 'package:todo_list/features/home/domain/usecases/get_all_task_completed_usecase.dart';
 
-
 class HomeModule extends Module {
   @override
-  void binds(i) {}
+  final List<Bind> binds = [
+    Bind.factory((i) => DefaultHttpResponseService()),
+    Bind.factory((i) => HomeDataSourceImpl(client: i())),
+    Bind.factory((i) => HomeRepositoryImpl(dataSource: i())),
+    Bind.factory((i) => GetListUseCase(homeRepository: i())),
+    Bind.factory((i) => GetAllTasksCompletedUseCase(homeRepository: i())),
+    Bind.factory((i) => GetListByIdTaskUseCase(homeRepository: i())),
+    Bind.factory((i) => CompleteTaskUseCase(homeRepository: i())),
+    Bind.factory((i) => HomeController(
+        getListUseCase: i(),
+        getAllTasksCompletedUseCase: i(),
+        getListByIdTaskUseCase: i(),
+        completeTaskUseCase: i()))
+  ];
 
   @override
-  void routes(r) {
-    r.child("/",
-        child: (context) => HomePage(
-            homeController: HomeController(
-                getListUseCase: GetListUseCase(
-                    homeRepository: HomeRepositoryImpl(
-                        dataSource: HomeDataSourceImpl(
-                            client: DefaultHttpResponseService()))),
-                getAllTasksCompletedUseCase: GetAllTasksCompletedUseCase(
-                    homeRepository: HomeRepositoryImpl(
-                        dataSource: HomeDataSourceImpl(
-                            client: DefaultHttpResponseService()))),
-                completeTaskUseCase: CompleteTaskUseCase(
-                    homeRepository: HomeRepositoryImpl(
-                        dataSource: HomeDataSourceImpl(
-                            client: DefaultHttpResponseService()))),
-                getListByIdTaskUseCase: GetListByIdTaskUseCase(
-                    homeRepository: HomeRepositoryImpl(
-                        dataSource: HomeDataSourceImpl(
-                            client: DefaultHttpResponseService()))))));
-
-    r.module("/register", module: RegisterModule());
-  }
+  final List<ModularRoute> routes = [
+    ChildRoute("/",
+        child: (_, args) => HomePage(
+              homeController: Modular.get(),
+            )),
+    ModuleRoute("/register", module: RegisterModule()),
+  ];
 }

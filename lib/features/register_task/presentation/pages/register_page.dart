@@ -66,9 +66,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 : "Atualizar Tarefa",
             onTap: () {
               final nameTask = widget.registerController.nameTask;
-              print(nameTask);
               if (widget.homeEntity.task.isEmpty) {
-              print("nameTask teste");
                 widget.registerController.createTask(nameTask: nameTask);
               }
               widget.registerController.updateTask(

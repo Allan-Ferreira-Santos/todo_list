@@ -9,7 +9,8 @@ class App extends StatelessWidget {
     return MaterialApp.router(
       title: 'Todo List',
       debugShowCheckedModeBanner: false,
-      routerConfig: Modular.routerConfig,
+      routeInformationParser: Modular.routeInformationParser,
+      routerDelegate: Modular.routerDelegate,
     );
   }
 }
