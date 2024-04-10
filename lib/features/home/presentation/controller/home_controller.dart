@@ -4,6 +4,7 @@ import 'package:todo_list/features/home/domain/usecases/get_list_usecase.dart';
 import 'package:todo_list/features/home/domain/usecases/complete_task_usecase.dart';
 import 'package:todo_list/features/home/domain/usecases/get_list_by_id_usecase.dart';
 import 'package:todo_list/features/home/domain/usecases/get_all_task_completed_usecase.dart';
+// ignore: library_private_types_in_public_api
 
 part 'home_controller.g.dart';
 

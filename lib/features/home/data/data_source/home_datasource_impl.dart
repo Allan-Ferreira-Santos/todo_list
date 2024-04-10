@@ -29,7 +29,6 @@ class HomeDataSourceImpl implements HomeDataSource {
       const url = "https://gc-api-todo.vercel.app/{Allan-Ferreira}/todos?status=complete";
       final response = await client.get(url: url);
       final List<dynamic> jsonData = jsonDecode(response.body);
-      print("jsonData $jsonData");
       final List<HomeModel> homeModels = jsonData.map((json) => HomeModel.fromJson(json)).toList();
       return homeModels;
     } on ServerError {
