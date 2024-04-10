@@ -7,7 +7,10 @@ class UpdateTaskUseCase {
 
   Future<String> call({required String nameTask, required int id}) async {
     try {
-      return await registerRepository.updateTask(nameTask: nameTask, id: id);
+      if (nameTask.isNotEmpty) {
+        return await registerRepository.updateTask(nameTask: nameTask, id: id);
+      }
+      return "";
     } on ServerError {
       rethrow;
     }

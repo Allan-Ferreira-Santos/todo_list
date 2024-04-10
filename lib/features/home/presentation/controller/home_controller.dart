@@ -7,52 +7,69 @@ import 'package:todo_list/features/home/domain/usecases/get_all_task_completed_u
 
 part 'home_controller.g.dart';
 
-class HomeController = _HomeController with _$HomeController;
+class HomeController = _HomeControllerBase with _$HomeController;
 
-abstract class _HomeController with Store {
+abstract class _HomeControllerBase with Store {
   final GetListUseCase getListUseCase;
   final GetAllTasksCompletedUseCase getAllTasksCompletedUseCase;
   final GetListByIdTaskUseCase getListByIdTaskUseCase;
   final CompleteTaskUseCase completeTaskUseCase;
 
-  _HomeController(
+  @observable
+  List<HomeEntity> listItems = [];
+
+  @observable
+  List<HomeEntity> listItemsCompleted = [];
+
+  @observable
+  bool isActivityItemsCompleted = false;
+
+  @observable
+  bool isLoading = false;
+
+  _HomeControllerBase(
       {required this.getListUseCase,
       required this.getAllTasksCompletedUseCase,
-      required this.completeTaskUseCase,
-      required this.getListByIdTaskUseCase});
+      required this.getListByIdTaskUseCase,
+      required this.completeTaskUseCase});
 
+  @action
   Future<void> getAllList() async {
-    final List<HomeEntity> list = [];
-    final result = await getListUseCase.call();
+    isLoading = true;
 
-    print(result);
+    await getListUseCase.call().then((value) => {
+          if (value.isNotEmpty) {listItems = value, isLoading = false}
+        });
+  }
 
-//TODO: passar aqui para melhorar nomes
-    for (var teste in result) {
-      final aqui =
-          HomeEntity(id: teste.id, task: teste.task, status: teste.status);
-      list.add(aqui);
+  @action
+  Future<void> getAllCompleted() async {
+    isLoading = true;
+    final result = await getAllTasksCompletedUseCase.call();
+    listItemsCompleted = result;
+    isLoading = false;
+  }
 
-      print(list);
+  @action
+  Future<void> getListById({required int id}) async {
+    await getListByIdTaskUseCase.call(id: id);
+  }
+
+  @action
+  Future<void> completTask({required int id}) async {
+    isLoading = true;
+    await completeTaskUseCase.call(id: id);
+    await getAllList();
+  }
+
+  @action
+  Future<void> setIsActivityItemsCompleted() async {
+    isActivityItemsCompleted = !isActivityItemsCompleted;
+
+    if (isActivityItemsCompleted) {
+      await getAllCompleted();
+    } else {
+      await getAllList();
     }
-
-  }
-
-  getAllCompleted() async {
-    //TODO: PASSAR AQUI PARA COLOCAR UM FOR
-    final result = await getListUseCase.call();
-    print(result);
-  }
-
-  getListById({required int id}) async {
-    //TODO: PASSAR AQUI PARA COLOCAR UM FOR
-    final result = await getListByIdTaskUseCase.call(id: id);
-    print(result);
-  }
-
-  completTask({required int id}) async {
-    final result = await completeTaskUseCase.call(id: id);
-    print("result ");
-    print(result);
   }
 }

@@ -10,16 +10,17 @@ abstract class RegisteController with Store {
   final RegisterTaskUseCase registerTaskUseCase;
   final UpdateTaskUseCase updateTaskUseCase;
 
+  @observable
+  String nameTask = "";
+
   RegisteController(
       {required this.registerTaskUseCase, required this.updateTaskUseCase});
 
-  createTask({required String nameTask}) async {
-    final result = await registerTaskUseCase.call(nameTask: nameTask);
-    print(result);
+  Future<void> createTask({required String nameTask}) async {
+    await registerTaskUseCase.call(nameTask: nameTask);
   }
 
-  updateTask({required String nameTask, required int id}) async {
-    final result = await updateTaskUseCase.call(nameTask: nameTask, id: id);
-    print("controolleee ${result}");
+  Future<void> updateTask({required String nameTask, required int id}) async {
+     await updateTaskUseCase.call(nameTask: nameTask, id: id);
   }
 }

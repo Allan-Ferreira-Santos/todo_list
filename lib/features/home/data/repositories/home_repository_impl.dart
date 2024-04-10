@@ -24,8 +24,7 @@ class HomeRepositoryImpl implements HomeRepository {
   Future<List<HomeEntity>> getAllTasksCompleted() async {
     try {
       final getAllTaskComplete = await dataSource.getAllTasksCompleted();
-      final List<HomeEntity> listHomeEntity =
-          getAllTaskComplete.map((e) => e.toEntity()).toList();
+      final List<HomeEntity> listHomeEntity = getAllTaskComplete.map((e) => e.toEntity()).toList();
       return listHomeEntity;
     } on ServerError {
       rethrow;
